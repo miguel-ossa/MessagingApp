@@ -15,18 +15,18 @@ class LoginUseCase @Inject constructor(private val dataSource: DataSource) {
             // 1. Validate credentials against backend
             // 2. Authenticate with server
             // 3. Retrieve user data
-            // For now, we'll simulate a login by finding an existing user
-
-            // This is a simplified version - in reality, you'd want to:
-            // - Hash the password before comparing
-            // - Use secure authentication methods (JWT, OAuth, etc.)
-            // - Handle network calls properly
 
             val users = dataSource.getUsers().first()
             val user = users.find { it.username == username }
 
             if (user != null) {
-                Result.success(user)
+                // In a real app, we would compare hashed passwords
+                // For demo purposes, we'll just check if password matches (insecure)
+                if (user.password == password) {
+                    Result.success(user)
+                } else {
+                    Result.failure(Exception("Invalid password"))
+                }
             } else {
                 Result.failure(Exception("User not found"))
             }

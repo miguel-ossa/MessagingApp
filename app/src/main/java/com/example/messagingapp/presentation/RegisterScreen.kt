@@ -20,6 +20,7 @@ import com.example.messagingapp.model.User
 @Composable
 fun RegisterScreen(
     onRegisterSuccess: (User) -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: MessageViewModel = viewModel()
 ) {
     var username by remember { mutableStateOf("") }
@@ -126,10 +127,14 @@ fun RegisterScreen(
                     else -> {
                         isLoading = true
                         errorMessage = null
-                        // In a real app, you would call the register use case here
-                        // For demo purposes, we'll just simulate a successful registration
-                        onRegisterSuccess(User("user_1", username, email, "", System.currentTimeMillis()))
-                        isLoading = false
+                        viewModel.register(username, email, password) { result ->
+                            if (result.isSuccess) {
+                                onRegisterSuccess(result.getOrNull()!!)
+                            } else {
+                                errorMessage = result.exceptionOrNull()?.message ?: "Registration failed"
+                            }
+                            isLoading = false
+                        }
                     }
                 }
             },
@@ -147,7 +152,7 @@ fun RegisterScreen(
 
         TextButton(
             onClick = {
-                // Navigate to login screen
+                onNavigateToLogin()
             }
         ) {
             Text("Already have an account? Login")

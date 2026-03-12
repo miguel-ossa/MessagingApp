@@ -12,7 +12,7 @@ class RegisterUseCase @Inject constructor(private val dataSource: DataSource) {
         return try {
             // In a real implementation, this would:
             // 1. Validate input data
-            // 2. Hash the password
+            // 2. Hash the password (this is a simplified version - in reality you'd use proper hashing)
             // 3. Send registration request to backend
             // 4. Save user data locally
 
@@ -23,6 +23,7 @@ class RegisterUseCase @Inject constructor(private val dataSource: DataSource) {
                 id = userId,
                 username = username,
                 email = email,
+                password = password, // In a real app, this would be hashed
                 publicKey = "", // In real app, this would be generated securely
                 createdAt = System.currentTimeMillis()
             )

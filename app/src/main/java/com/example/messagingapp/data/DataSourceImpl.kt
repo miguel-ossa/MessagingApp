@@ -5,11 +5,12 @@ import com.example.messagingapp.database.UserDao
 import com.example.messagingapp.model.Message
 import com.example.messagingapp.model.User
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
- * Implementation of DataSource interface
+ * Implementation of DataSource interface using Room DAOs
  */
-class DataSourceImpl(
+class DataSourceImpl @Inject constructor(
     private val messageDao: MessageDao,
     private val userDao: UserDao
 ) : DataSource {

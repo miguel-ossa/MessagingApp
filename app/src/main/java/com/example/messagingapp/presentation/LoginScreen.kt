@@ -20,12 +20,14 @@ import com.example.messagingapp.model.User
 @Composable
 fun LoginScreen(
     onLoginSuccess: (User) -> Unit,
+    onNavigateToRegister: () -> Unit,
     viewModel: MessageViewModel = viewModel()
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -71,13 +73,37 @@ fun LoginScreen(
                 .padding(bottom = 16.dp)
         )
 
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
         Button(
             onClick = {
-                isLoading = true
-                // In a real app, you would call the login use case here
-                // For demo purposes, we'll just simulate a successful login
-                onLoginSuccess(User("user_1", username, "$username@example.com", "", System.currentTimeMillis()))
-                isLoading = false
+                // Simple validation
+                when {
+                    username.isEmpty() -> {
+                        errorMessage = "Username cannot be empty"
+                    }
+                    password.isEmpty() -> {
+                        errorMessage = "Password cannot be empty"
+                    }
+                    else -> {
+                        isLoading = true
+                        errorMessage = null
+                        viewModel.login(username, password) { result ->
+                            if (result.isSuccess) {
+                                onLoginSuccess(result.getOrNull()!!)
+                            } else {
+                                errorMessage = result.exceptionOrNull()?.message ?: "Login failed"
+                            }
+                            isLoading = false
+                        }
+                    }
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading
@@ -93,7 +119,7 @@ fun LoginScreen(
 
         TextButton(
             onClick = {
-                // Navigate to register screen
+                onNavigateToRegister()
             }
         ) {
             Text("Don't have an account? Register")
